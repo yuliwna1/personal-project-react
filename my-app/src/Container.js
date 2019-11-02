@@ -5,9 +5,7 @@ function Container(props) {
   return (
     <div className="text-left">
       <h1>{props.title}</h1>
-      {console.log("props data: ", props.data)}
       {props.data.map((item, index) => {
-        console.log("item: ", item);
         return (
           <Card
             link={item.repo.name}

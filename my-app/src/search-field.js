@@ -22,12 +22,11 @@ function ShowData({ userNameOutput }) {
     async function getData() {
       try {
         let data;
-        // This API has only username: https://api.github.com/users
-        // This API has githubUserName, information about users' forks: https://api.github.com/users/pkanal/repos
         let response = await fetch(
           `https://api.github.com/users/${userNameOutput}/events`
         );
         data = await response.json();
+
         const filteredEventData = data.filter(item => {
           return item.type === "PullRequestEvent" || item.type === "ForkEvent";
         });
@@ -42,6 +41,8 @@ function ShowData({ userNameOutput }) {
   useEffect(() => {
     function filterData(data) {
       const groupData = groupBy(data, "type");
+      console.log(groupData);
+
       if (groupData.PullRequestEvent) {
         getPullRequestData(groupData.PullRequestEvent);
       }
@@ -65,7 +66,7 @@ function ShowData({ userNameOutput }) {
     checkLoad(githubAPIData);
   }, [githubAPIData]);
 
-  console.log("show data:", isLoading, githubAPIData);
+  console.log("data", githubAPIData, forkData);
 
   return (
     <React.Fragment>
