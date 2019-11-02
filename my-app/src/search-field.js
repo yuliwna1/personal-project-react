@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { connect } from "react-redux";
+import { fetchDataThunk } from "./store/github-info-actions";
 import Container from "./Container";
 
 function groupBy(objArr, property) {
@@ -102,11 +104,11 @@ function SearchField() {
   };
 
   return (
-    <>
+    <React.Fragment>
       {!userNameOutput && (
         <form>
           <label>
-            Github Username!:
+            Github Username:
             <input
               type="text"
               placeholder="Type something..."
@@ -119,8 +121,17 @@ function SearchField() {
       )}
 
       {userNameOutput && <ShowData userNameOutput={userNameOutput} />}
-    </>
+    </React.Fragment>
   );
 }
 
-export default SearchField;
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({
+  storeData: () => dispatch(fetchDataThunk())
+});
+
+export const AppContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchField);
