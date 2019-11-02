@@ -106,7 +106,7 @@ function SearchField() {
       {!userNameOutput && (
         <form>
           <label>
-            Github Username:
+            Github Username!:
             <input
               type="text"
               placeholder="Type something..."
