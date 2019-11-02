@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { connect } from "react-redux";
 import { fetchDataThunk } from "./store/github-info-actions";
 import Container from "./Container";
@@ -19,54 +19,6 @@ function ShowData({ userNameOutput }) {
   const [pullRequestData, getPullRequestData] = useState([]);
   const [forkData, getForkData] = useState([]);
   const [isLoading, getStatus] = useState(true);
-
-  useEffect(() => {
-    async function getData() {
-      try {
-        let data;
-        let response = await fetch(
-          `https://api.github.com/users/${userNameOutput}/events`
-        );
-        data = await response.json();
-
-        const filteredEventData = data.filter(item => {
-          return item.type === "PullRequestEvent" || item.type === "ForkEvent";
-        });
-        getAPIData(filteredEventData);
-      } catch (err) {
-        console.log("There is an error:", err.message);
-      }
-    }
-    getData();
-  }, [userNameOutput, getAPIData]);
-
-  useEffect(() => {
-    function filterData(data) {
-      const groupData = groupBy(data, "type");
-      console.log(groupData);
-
-      if (groupData.PullRequestEvent) {
-        getPullRequestData(groupData.PullRequestEvent);
-      }
-
-      if (groupData.ForkEvent) {
-        getForkData(groupData.ForkEvent);
-      }
-    }
-
-    function checkLoad(data) {
-      if (data.length === 0) {
-        getStatus(true);
-      }
-
-      if (data.length > 0) {
-        getStatus(false);
-      }
-    }
-
-    filterData(githubAPIData);
-    checkLoad(githubAPIData);
-  }, [githubAPIData]);
 
   console.log("data", githubAPIData, forkData);
 
@@ -94,14 +46,21 @@ function ShowData({ userNameOutput }) {
   );
 }
 
-function SearchField() {
+function SearchField(props) {
   const [githubUserName, getName] = useState("");
   const [userNameOutput, passUserNameToAPI] = useState(githubUserName);
 
   const handleSubmit = e => {
     e.preventDefault();
-    passUserNameToAPI(githubUserName);
+    props.storeData(githubUserName);
+
   };
+ // Similar to componentDidMount and componentDidUpdate:
+  useEffect(() => {
+  // Update the document title using the browser API
+  //    props.storeData(githubUserName); <--- i did it here too but its dangerous because it fetches all the time
+
+  });
 
   return (
     <React.Fragment>
@@ -128,10 +87,10 @@ function SearchField() {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
-  storeData: () => dispatch(fetchDataThunk())
+  storeData: (data) => dispatch(fetchDataThunk(data))
 });
 
-export const AppContainer = connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(SearchField);

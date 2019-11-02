@@ -26,6 +26,7 @@ export const setPullRequestData = (pullRequestData = []) => ({
 });
 
 export const fetchDataThunk = userNameOutput => async dispatch => {
+  console.log("YOOO ", userNameOutput);
   const storeData = data => dispatch(fetchData(data));
   try {
     let data;
