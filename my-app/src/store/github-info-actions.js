@@ -15,14 +15,14 @@ export const fetchData = (data = []) => ({
   payload: data
 });
 
-export const setForkEventData = (data = []) => ({
+export const setForkEventData = (forkEventData = []) => ({
   type: GITHUB_DATA_ACTION_TYPES.SET_FORK_EVENT_DATA,
-  payload: action
+  payload: forkEventData
 });
 
-export const setPullRequestData = (data = []) => ({
+export const setPullRequestData = (pullRequestData = []) => ({
   type: GITHUB_DATA_ACTION_TYPES.SET_PULL_REQUEST_DATA,
-  payload: action
+  payload: pullRequestData
 });
 
 export const fetchDataThunk = userNameOutput => async dispatch => {
