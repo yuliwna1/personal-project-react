@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { fetchDataThunk } from "./store/github-info-actions";
 
@@ -13,7 +13,52 @@ function groupBy(objArr, property) {
   }, {});
 }
 
-function SearchField() {
+function ShowData({ userNameOutput }) {
+  const [githubAPIData, getAPIData] = useState([]);
+  const [pullRequestData, getPullRequestData] = useState([]);
+  const [forkData, getForkData] = useState([]);
+  const [isLoading, getStatus] = useState(true);
+
+  console.log("data", githubAPIData, forkData);
+
+  return (
+    <React.Fragment>
+      {Object.keys(githubAPIData).length === 0 && isLoading && (
+        <h1>Loading...</h1>
+      )}
+
+      {Object.keys(githubAPIData).length > 0 && (
+        <h1 className="text-right">{userNameOutput}</h1>
+      )}
+
+      {forkData.length > 0 && (
+        <Container data={forkData} title={"Recent Forks"} name={"fork"} />
+      )}
+      {pullRequestData.length > 0 && (
+        <Container
+          data={pullRequestData}
+          title={"Recent Pull Request"}
+          name={"pullRequest"}
+        />
+      )}
+    </React.Fragment>
+  );
+}
+
+function SearchField(props) {
+  const [githubUserName, getName] = useState("");
+  const [userNameOutput, passUserNameToAPI] = useState(githubUserName);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    props.storeData(githubUserName);
+  };
+  // Similar to componentDidMount and componentDidUpdate:
+  useEffect(() => {
+    // Update the document title using the browser API
+    //    props.storeData(githubUserName); <--- i did it here too but its dangerous because it fetches all the time
+  });
+
   return (
     <React.Fragment>
       <h1>test</h1>
@@ -24,10 +69,10 @@ function SearchField() {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
-  storeData: () => dispatch(fetchDataThunk())
+  storeData: data => dispatch(fetchDataThunk(data))
 });
 
-export const AppContainer = connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(SearchField);
