@@ -25,9 +25,30 @@ export const setPullRequestData = (pullRequestData = []) => ({
   payload: pullRequestData
 });
 
+function groupBy(objArr, property) {
+  return objArr.reduce((acc, obj) => {
+    var key = obj[property];
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(obj);
+    return acc;
+  }, {});
+}
+
 export const fetchDataThunk = userNameOutput => async dispatch => {
   console.log("YOOO ", userNameOutput);
+  const storeName = userNameOutput => dispatch(setName(userNameOutput));
   const storeData = data => dispatch(fetchData(data));
+
+  const storeForkEventData = forkEventData =>
+    dispatch(setForkEventData(forkEventData));
+
+  const storePullRequestData = pullRequestData =>
+    dispatch(setPullRequestData(pullRequestData));
+
+  storeName(userNameOutput);
+
   try {
     let data;
     let response = await fetch(
@@ -37,7 +58,10 @@ export const fetchDataThunk = userNameOutput => async dispatch => {
     const filteredEventData = data.filter(item => {
       return item.type === "PullRequestEvent" || item.type === "ForkEvent";
     });
+    const groupedData = groupBy(filteredEventData, "type");
     storeData(filteredEventData);
+    storePullRequestData(groupedData.PullRequestEvent);
+    storeForkEventData(groupedData.ForkEvent);
   } catch (err) {
     console.log("There is an error:", err.message);
   }

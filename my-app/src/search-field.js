@@ -1,72 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { fetchDataThunk } from "./store/github-info-actions";
+import Container from "./Container";
 
-function groupBy(objArr, property) {
-  return objArr.reduce((acc, obj) => {
-    var key = obj[property];
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(obj);
-    return acc;
-  }, {});
-}
-
-function ShowData({ userNameOutput }) {
-  const [githubAPIData, getAPIData] = useState([]);
-  const [pullRequestData, getPullRequestData] = useState([]);
-  const [forkData, getForkData] = useState([]);
-  const [isLoading, getStatus] = useState(true);
-
-  console.log("data", githubAPIData, forkData);
-
+const ShowData = data => {
   return (
-    <React.Fragment>
-      {Object.keys(githubAPIData).length === 0 && isLoading && (
-        <h1>Loading...</h1>
+    <div>
+      {(data.data.forkEventData.length > 0 ||
+        data.data.pullRequestData.length > 0) && (
+        <h1 className="text-right">{data.data.userNameOutput}</h1>
       )}
 
-      {Object.keys(githubAPIData).length > 0 && (
-        <h1 className="text-right">{userNameOutput}</h1>
-      )}
+      {data.data.forkEventData.length === 0 &&
+        data.data.pullRequestData.length === 0 && <h1>Loading...</h1>}
 
-      {forkData.length > 0 && (
-        <Container data={forkData} title={"Recent Forks"} name={"fork"} />
-      )}
-      {pullRequestData.length > 0 && (
+      {data.data.forkEventData.length > 0 && (
         <Container
-          data={pullRequestData}
+          data={data.data.forkEventData}
+          title={"Recent Forks"}
+          name={"fork"}
+        />
+      )}
+      {data.data.pullRequestData.length > 0 && (
+        <Container
+          data={data.data.pullRequestData}
           title={"Recent Pull Request"}
           name={"pullRequest"}
         />
       )}
-    </React.Fragment>
+    </div>
   );
-}
+};
 
 function SearchField(props) {
   const [githubUserName, getName] = useState("");
-  const [userNameOutput, passUserNameToAPI] = useState(githubUserName);
 
   const handleSubmit = e => {
     e.preventDefault();
     props.storeData(githubUserName);
   };
-  // Similar to componentDidMount and componentDidUpdate:
-  useEffect(() => {
-    // Update the document title using the browser API
-    //    props.storeData(githubUserName); <--- i did it here too but its dangerous because it fetches all the time
-  });
 
   return (
     <React.Fragment>
-      <h1>test</h1>
+      {!props.userNameOutput && (
+        <div className="container">
+          <form>
+            <label>
+              <h2 className="bold text-left">Github Username:</h2>
+              <input
+                type="text"
+                placeholder="Type something..."
+                value={githubUserName}
+                onChange={e => getName(e.target.value)}
+              ></input>
+            </label>
+            <input
+              className="upperCase"
+              type="submit"
+              onClick={handleSubmit}
+              value="Get User"
+            ></input>
+          </form>
+        </div>
+      )}
+
+      {props.userNameOutput && <ShowData data={props} />}
     </React.Fragment>
   );
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  userNameOutput: state.userNameOutput,
+  forkEventData: state.forkEventData,
+  pullRequestData: state.pullRequestData
+});
 
 const mapDispatchToProps = dispatch => ({
   storeData: data => dispatch(fetchDataThunk(data))
