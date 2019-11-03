@@ -104,18 +104,25 @@ function SearchField() {
   return (
     <>
       {!userNameOutput && (
-        <form>
-          <label>
-            Github Username:
+        <div className="container">
+          <form>
+            <label>
+              <h2 className="text-left bold">Github Username:</h2>
+              <input
+                type="text"
+                placeholder="Type something..."
+                value={githubUserName}
+                onChange={e => getName(e.target.value)}
+              ></input>
+            </label>
             <input
-              type="text"
-              placeholder="Type something..."
-              value={githubUserName}
-              onChange={e => getName(e.target.value)}
+              className="upperCase"
+              value="Get User"
+              type="submit"
+              onClick={handleSubmit}
             ></input>
-          </label>
-          <input type="submit" onClick={handleSubmit}></input>
-        </form>
+          </form>
+        </div>
       )}
 
       {userNameOutput && <ShowData userNameOutput={userNameOutput} />}
